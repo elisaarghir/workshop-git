@@ -12,15 +12,86 @@ As the image below shows, `git add` moves changes from the working directory int
   <img src="images/git-flow.png" alt="Git flow: working directory, staging area and repository connected by git add and git commit" width="600">
 </p>
 
+## Create Your Own Repository
+
+But how do you create your own directory and repository in the first place?
+
+Before working on an existing project, let's warm up by building a repository from scratch.
+This way you get to see how a repository is "born", and then connect it to the remote repository we will use throughout this workshop.
+
+> [!IMPORTANT]
+> We recommend you write all commands below by hand, i.e. without using copy & paste.
+> This will get you better accustomed to Git and Git commands.
+
+1. Create a new directory for your project and enter it:
+
+   ```console
+   mkdir workshop-git
+   cd workshop-git/
+   ```
+
+   This is just a plain directory on disk.
+   It is **not** a Git repository yet.
+
+1. Initialize the repository:
+
+   ```console
+   git init
+   ```
+
+   `git init` turns the current directory into a Git repository.
+   It creates a hidden `.git/` directory that holds all the data and metadata Git needs to track your work.
+
+1. Look at what `git init` created:
+
+   ```console
+   ls -a
+   ```
+
+   You now see the `.git/` directory: your plain directory is now a Git repository.
+
+So far the repository is empty and only lives on your machine.
 This is a practical workshop consisting of common Git-related actions.
 It is based on the [`unikraft/catalog-core` repository](https://github.com/unikraft/catalog-core), giving us a concrete Git repository to screw up ... hmmmm ... to do wonderful amazing great things to.
+Let's connect our fresh repository to it and bring in its contents.
 
-First of all, clone the [repository](https://github.com/rosedu/workshop-git):
+1. Add the workshop repository as a remote named `origin`:
 
-```console
-git clone https://github.com/rosedu/workshop-git
-cd workshop-git/
-```
+   ```console
+   git remote add origin https://github.com/rosedu/workshop-git
+   ```
+
+   A **remote** is a reference to another repository, typically hosted online.
+   Naming it `origin` is just the widely used convention for the main remote.
+
+1. Download all the branches and history from the remote:
+
+   ```console
+   git fetch origin
+   ```
+
+   `git fetch` downloads everything from the remote (all branches and commits) and stores it locally as remote-tracking branches (`origin/main`, `origin/base`, `origin/scripts`, ...), **without** touching your working directory yet.
+   We need these branches available for the later parts of the workshop.
+
+1. Pull the workshop contents into your working directory:
+
+   ```console
+   git pull origin main
+   ```
+
+   `git pull` fetches the `main` branch from the remote and merges it into your current branch.
+   Your previously empty repository now contains all the workshop files.
+
+> [!TIP]
+> The four steps above - `git init`, `git remote add`, `git fetch`, and `git pull` - are exactly what `git clone` does for you in a single command.
+> Instead of building the repository by hand, you could have obtained the same result with:
+>
+> ```console
+> git clone https://github.com/rosedu/workshop-git
+> cd workshop-git/
+> ```
+>
+> We did it step by step here so you can see how a repository is created and connected to a remote.
 
 And let's get going! 🚀
 
@@ -30,10 +101,6 @@ And let's get going! 🚀
 > ```console
 > ./reset-all.sh
 > ```
-
-> [!IMPORTANT]
-> We recommend you write all commands below by hand, i.e. without using copy & paste.
-> This will get you better accustomed to Git and Git commands.
 
 ## Inspect Repository
 
