@@ -481,126 +481,99 @@ We just need to know how to do that.
    ./reset-all.sh
    ```
 
-## Edit Commit History
+## Stash Changes
 
-Let's get to a situation where we need to repair the commit history.
-We will have a setup where we have the following stack of commits:
+Sometimes you are in the middle of editing files, but you are **not** ready to commit yet.
+Maybe you need to quickly switch to another branch, or pull in new changes, but Git complains that you have uncommitted work.
 
-- (top) correct commit
-- (next) commit that shouldn't exist (`bla bla` commit)
-- (next-next) commit with a typo (`Bue` instead of `Bye`)
+`git stash` solves this: it **pauses** your work by setting your uncommitted changes aside, leaving you a clean working directory.
+Later, you **resume** your work by bringing those changes back, exactly where you left off.
 
-We want to edit the commit history and:
+You can think of the stash as a separate "drawer" where Git temporarily stores your unfinished changes.
+It is neither the working directory, nor the staging area, nor the repository: it is a place on the side.
 
-- Remove the `bla bla` commit.
-- Fix the typo.
+Make sure you are on the `main` branch and everything is clean:
 
-1. Create the setup:
+```console
+git checkout main
+git status
+```
 
-   ```console
-   ./set-up-history-edit.sh
-   git status
-   git log
-   ```
+Or, reset the repository:
 
-1. **Note**: If, at any point in time, you miss a command, or something bad simply happened, reset the environment by running:
+```console
+./reset-all.sh
+```
 
-   ```console
-   ./reset-all.sh
-   ```
-
-   Then go back to step 1 and prepare the messed up environment again.
-
-1. Go into commit history editing mode:
+1. Make a change to a tracked file, so you have some work in progress:
 
    ```console
-   git rebase -i HEAD~3
-   ```
-
-   The `rebase` command positions you somewhere else in the commit history.
-   You can make updates to commits from that point onward.
-
-   The `~N` construct is a reference to `N` commits before the current one.
-   `HEAD~3` means 3 commits before the top commit.
-
-   You get an editor screen with an output like this:
-
-   ```text
-   pick e5442f0 Add C Bue application
-   pick 06eb1fa bla bla
-   pick 74f3d3e c-bye: Add Firecracker build script for x86_64
-   ```
-
-1. Edit the rebase screen contents in order to edit the commit with the typo (`Bue` instead of `Bye`) and to drop the extra commit (the one with `bla bla`).
-   Have the editor screen have the contents:
-
-   ```
-   edit e5442f0 Add C Bue application
-   drop 06eb1fa bla bla
-   pick 74f3d3e c-bye: Add Firecracker build script for x86_64
-   ```
-
-   That is, the first line (the bad commit message) should have `edit` instead of `pick` - we edit the commit.
-   And the second line (the extra commit) should have `drop` instead of `pick` - we drop the commit.
-
-   Save and exit the editor screen.
-
-1. We are currently editing the typo commit:
-
-   ```console
-   git log
-   git show
-   ```
-
-1. Update the commit message from `Bue` to `Bye`:
-
-   ```console
-   git log
-   git commit --amend    # do edit as required
-   git log
-   git show
-   ```
-
-1. Continue the commit history editing:
-
-   ```console
-   git rebase --continue
-   ```
-
-   Each `git rebase --continue` command gets you to the next commit to update.
-
-1. The extra commit has been dropped:
-
-   ```console
-   git log
+   echo "# work in progress" >> c-hello/README.md
    git status
    ```
 
-1. The commit history editing (aka the rebase) is done:
+   `git status` shows your change under `Changes not staged for commit:`.
+   This is the work we want to pause.
+
+1. Pause your work by stashing it:
 
    ```console
-   git rebase --continue
+   git stash
+   git status
    ```
 
-   It says "No rebase in progress?", meaning the rebase is done.
-   There are no more commits to update.
+   `git stash` takes your uncommitted changes (both staged and unstaged), saves them aside, and restores your working directory to a clean state.
+   Notice how `git status` now reports `nothing to commit, working tree clean`: your change seems to be gone, but it is only set aside.
+
+1. List your stashed changes:
+
+   ```console
+   git stash list
+   ```
+
+   Each stash entry is shown as `stash@{0}`, `stash@{1}`, ... with `stash@{0}` being the most recent one.
+   Your paused work is safely stored there.
+
+   You can also peek at what a stash contains, without restoring it:
+
+   ```console
+   git stash show -p
+   ```
+
+1. Resume your work by bringing the changes back:
+
+   ```console
+   git stash pop
+   git status
+   ```
+
+   `git stash pop` re-applies the most recent stash to your working directory and then **removes** it from the stash list.
+   Your change to `c-hello/README.md` is back, exactly as you left it: you are right where you stopped.
+
+   Check that the stash list is now empty:
+
+   ```console
+   git stash list
+   ```
+
+> [!TIP]
+> If you want to bring the changes back but **keep** the stash entry (for example, to apply it on several branches), use `git stash apply` instead of `git stash pop`.
+> You can later remove a stash you no longer need with `git stash drop`.
 
 ### Do It Yourself
 
-1. Repeat the above steps at least 2 more times.
-
-   Aim to have one time without checking the instructions.
-   That is, run the `./set-up-history-edit.sh` script and then repair the commit history by yourself.
-
-   If, at any point, you get lost, run the reset script:
+1. Reset the configuration:
 
    ```console
    ./reset-all.sh
    ```
 
-1. Do your own commit history that you want to edit.
-   Go to a given branch, create commits, create some bad or extra commits.
-   Then repair the commit history.
+1. Reproduce the classic stash scenario: switching branches with unfinished work.
+
+   - On the `main` branch, make a change to a tracked file.
+   - Stash it with `git stash`.
+   - Check out another branch (for example `git checkout base`), look around, then check out `main` again.
+   - Bring your work back with `git stash pop`.
 
    If, at any point, you get lost, run the reset script:
 
