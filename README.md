@@ -1,5 +1,17 @@
 # Git Workshop
 
+Git tracks your work across three areas, and you move changes between them with two key commands:
+
+- **working directory**: the files you are currently editing on disk.
+- **staging area**: the "waiting room" where you place the changes you want to include in the next commit, using `git add`.
+- **repository**: the permanent history of commits, where changes land once you run `git commit`.
+
+As the image below shows, `git add` moves changes from the working directory into the staging area, and `git commit` records the staged changes into the repository:
+
+<p align="center">
+  <img src="images/git-flow.png" alt="Git flow: working directory, staging area and repository connected by git add and git commit" width="600">
+</p>
+
 This is a practical workshop consisting of common Git-related actions.
 It is based on the [`unikraft/catalog-core` repository](https://github.com/unikraft/catalog-core), giving us a concrete Git repository to screw up ... hmmmm ... to do wonderful amazing great things to.
 
